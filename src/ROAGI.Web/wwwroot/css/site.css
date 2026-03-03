@@ -1,22 +1,221 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --parchment: #f4e4bc;
+    --dark-parchment: #c9a96e;
+    --wood-dark: #3d1f0a;
+    --wood-mid: #6b3a1f;
+    --wood-light: #8b5a2b;
+    --stone: #5a5a6a;
+    --gold: #ffd700;
+    --gold-dim: #b8860b;
+    --blood-red: #8b1a1a;
+    --magic-blue: #4a90d9;
+    --shadow: rgba(0,0,0,0.8);
+    --pixel: 4px;
+}
+
 html {
-  font-size: 14px;
+    font-size: 12px;
+    position: relative;
+    min-height: 100%;
+    image-rendering: pixelated;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 14px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+html, body, pre, code, kbd, samp {
+    font-family: "Press Start 2P", monospace;
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    padding: 0;
+    background: #1a0f00;
+}
+
+/* Pixel-perfect focus ring */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 2px var(--gold), 0 0 0 4px var(--wood-dark);
+    outline: none;
+}
+
+/* World frame — stone wall border feel */
+#background-frame {
+    background: repeating-linear-gradient( 90deg, transparent, transparent 48px, rgba(0,0,0,0.08) 48px, rgba(0,0,0,0.08) 50px ), repeating-linear-gradient( 0deg, transparent, transparent 48px, rgba(0,0,0,0.08) 48px, rgba(0,0,0,0.08) 50px ), linear-gradient(135deg, #2d5a1b 0%, #1a3d0a 40%, #0f2a05 100%);
+    display: flex;
+    padding: 16px;
+    border: 4px solid var(--wood-dark);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+}
+
+#game-canvas {
+    background: #3a7d1e;
+    border: 4px solid var(--wood-mid);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+#game-viewport {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #1a0a00 0%, #0a0500 70%, #000 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-content.blurred {
+    filter: blur(6px) brightness(0.4);
+    transition: filter 0.3s ease;
+}
+
+/* === MODAL OVERLAY === */
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    /* Vignette effect */
+    background-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%);
+}
+
+/* === TAVERN/SCROLL CARD === */
+.terminal-card {
+    background: repeating-linear-gradient( 0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 4px ), linear-gradient(160deg, #f4e4bc 0%, #dfc99a 50%, #c9a96e 100%);
+    border: none;
+    padding: 2.5rem 2rem;
+    color: var(--wood-dark);
+    font-family: 'Press Start 2P', monospace;
+    position: relative;
+    min-width: 340px;
+    max-width: 480px;
+    width: 90%;
+    /* Pixel/woodcut border using box-shadow layering */
+    box-shadow:
+    /* outer stone shadow */
+    0 0 0 4px var(--wood-dark), 0 0 0 8px var(--wood-mid), 0 0 0 12px var(--wood-dark),
+    /* glow */
+    0 0 60px rgba(255, 180, 50, 0.3),
+    /* depth */
+    8px 12px 0px rgba(0,0,0,0.6);
+    /* Aged parchment corner feel */
+    clip-path: polygon( 0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px) );
+}
+
+    /* Decorative top banner on the card */
+    .terminal-card::before {
+        content: '⚔ ═══════════════ ⚔';
+        display: block;
+        text-align: center;
+        color: var(--gold-dim);
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        margin-bottom: 1.2rem;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    }
+
+    .terminal-card::after {
+        content: '⚔ ═══════════════ ⚔';
+        display: block;
+        text-align: center;
+        color: var(--gold-dim);
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        margin-top: 1.2rem;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    }
+
+/* Modal Title */
+#modal-title {
+    text-align: center;
+    color: var(--blood-red);
+    font-size: 1rem;
+    margin: 0 0 1.5rem 0;
+    text-shadow: 2px 2px 0 var(--wood-dark), 0 0 20px rgba(139, 26, 26, 0.4);
+    letter-spacing: 2px;
+}
+
+/* Inputs — scroll/rune styled */
+#auth-inputs input {
+    display: block;
+    margin: 12px auto;
+    width: calc(100% - 24px);
+    padding: 10px 12px;
+    background: rgba(61, 31, 10, 0.12);
+    border: none;
+    box-shadow: 0 0 0 2px var(--wood-mid), 0 0 0 4px var(--dark-parchment), inset 2px 2px 0 rgba(0,0,0,0.2);
+    color: var(--wood-dark);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.65rem;
+    clip-path: polygon( 0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px) );
+    outline: none;
+    transition: box-shadow 0.15s;
+}
+
+    #auth-inputs input::placeholder {
+        color: var(--wood-light);
+        opacity: 0.7;
+    }
+
+    #auth-inputs input:focus {
+        box-shadow: 0 0 0 2px var(--gold), 0 0 0 4px var(--gold-dim), inset 2px 2px 0 rgba(0,0,0,0.15);
+        background: rgba(255, 220, 120, 0.2);
+    }
+
+/* Button group */
+.button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 1.2rem;
+}
+
+    /* RPG pixel buttons */
+    .button-group button {
+        padding: 10px 16px;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.6rem;
+        cursor: pointer;
+        border: none;
+        color: var(--parchment);
+        background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+        clip-path: polygon( 0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px) );
+        box-shadow: 0 4px 0 #1a0a00, inset 0 1px 0 rgba(255,255,255,0.15);
+        text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+        transition: transform 0.1s, box-shadow 0.1s;
+        letter-spacing: 1px;
+    }
+
+        .button-group button:hover {
+            background: linear-gradient(180deg, #9b5f35 0%, var(--wood-mid) 100%);
+            color: var(--gold);
+        }
+
+        .button-group button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #1a0a00, inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+/* Terminal output — quest log style */
+#terminal-output {
+    text-align: center;
+    font-size: 0.55rem;
+    color: var(--blood-red);
+    margin: 0.8rem 0 0 0;
+    min-height: 1.2em;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+    letter-spacing: 1px;
 }
