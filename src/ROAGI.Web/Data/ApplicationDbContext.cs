@@ -11,5 +11,6 @@ namespace ROAGI.Web.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<GameRun> GameRuns { get; set; }
     }
 }
