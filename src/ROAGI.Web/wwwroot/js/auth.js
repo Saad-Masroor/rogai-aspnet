@@ -1,5 +1,15 @@
-﻿
-async function auth(type) {
+﻿// js/auth.js
+import { GameState, setGameState } from './gameState.js';
+
+export function initAuth() {
+    document.getElementById('login-btn')
+        .addEventListener('click', () => auth('login'));
+
+    document.getElementById('register-btn')
+        .addEventListener('click', () => auth('register'));
+}
+
+export async function auth(type) {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
     const output = document.getElementById('terminal-output');
@@ -9,6 +19,7 @@ async function auth(type) {
         output.innerText = "ARGGH!: Enter both username and secret";
         return;
     }
+
     try {
         const response = await fetch(`/api/auth/${type}`, {
             method: 'POST',
@@ -23,39 +34,16 @@ async function auth(type) {
             setTimeout(() => {
                 document.getElementById('modal-overlay').style.display = 'none';
                 document.getElementById('background-frame').classList.remove('blurred');
-            }, 1000);
+
+                setGameState(GameState.PLAYING);
+            }, 1000); 
         } else {
             output.innerText = "ERROR: " + (result.message || "Unauthorized");
-            clearState();
+            document.getElementById('username').value = "";
+            document.getElementById('password').value = "";
+            document.getElementById('username').focus();
         }
     } catch (err) {
         output.innerText = "CONNECTION ERROR: System Offline";
     }
 }
-
-function clearState() {
-    const userInput = document.getElementById('username');
-    const passInput = document.getElementById('password');
-
-    userInput.value = "";
-    passInput.value = "";
-
-    userInput.focus();
-}
-usernameInput = document.getElementById('username');
-passwordInput = document.getElementById('password');
-// When Enter is pressed in username > move to password
-usernameInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        passwordInput.focus();
-    }
-});
-
-// When Enter is pressed in password > trigger login
-passwordInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        auth('login'); // change if your button uses a different type
-    }
-});
