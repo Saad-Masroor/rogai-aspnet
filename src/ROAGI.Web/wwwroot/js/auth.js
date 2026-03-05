@@ -2,11 +2,28 @@
 import { GameState, setGameState } from './gameState.js';
 
 export function initAuth() {
+    const userInput = document.getElementById('username');
+    const passInput = document.getElementById('password');
+    
     document.getElementById('login-btn')
         .addEventListener('click', () => auth('login'));
 
     document.getElementById('register-btn')
         .addEventListener('click', () => auth('register'));
+
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            passInput.focus();
+        }
+    });
+
+    passInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            auth('login'); // Default action
+        }
+    });
 }
 
 export async function auth(type) {
